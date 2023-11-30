@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:calender/calender_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:collection/collection.dart';
@@ -16,9 +14,9 @@ class CalenderCubit extends Cubit<CalenderStats> {
   DateTime dateTime = DateTime.now();
   List<MyDate> times = [];
 
+
   void nextPage() {
     dateTime = DateTime(dateTime.year,dateTime.month+1,1);
-    print(times.firstWhereOrNull((element) => element.date.compareTo(dateTime)==0));
     if(times.firstWhereOrNull((element) => element.date.compareTo(dateTime)==0) != null){
       return;
     }
