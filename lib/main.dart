@@ -1,6 +1,5 @@
 import 'package:calender/calender_cubit.dart';
 import 'package:calender/calender_states.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,6 +38,8 @@ class Calender extends StatelessWidget {
           CalenderCubit cubit = BlocProvider.of(context);
           scroll.addListener(() {
             var nextPageTrigger = 0.93 * scroll.position.maxScrollExtent;
+            var nextPageTrigger = 1 * scroll.position.maxScrollExtent;
+            var previousPageTrigger = scroll.position.extentBefore;
             if (scroll.position.pixels > nextPageTrigger) {
               print("next page");
 
@@ -47,6 +48,8 @@ class Calender extends StatelessWidget {
             if (scroll.position.pixels <= 100) {
               print("previous page");
               //cubit.previousPage();
+            if (scroll.position.pixels == 0) {
+              cubit.previousPage();
             }
             if (state is CalenderInitial) {}
           });
@@ -54,7 +57,7 @@ class Calender extends StatelessWidget {
             body: Column(
               children: [
                 const SizedBox(
-                  height: 300,
+                  height: 60,
                 ),
                 Container(
                   alignment: Alignment.center,
@@ -70,19 +73,20 @@ class Calender extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    cubit.dateTime.toString(),
+                    DateFormat('yyyy MMM').format(cubit.dateTime),
                   ),
                 ),
                 SizedBox(
-                  height: 300,
+                  height: 70,
                   child: ListView.builder(
                     controller: scroll,
                     scrollDirection: Axis.horizontal,
                     itemCount: cubit.times.length,
                     itemBuilder: (context, i) => Padding(
                       key: Key(cubit.times[i].date.toString()),
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: SizedBox(
+                        height: 70,
                         child: Card(
                           child: Column(
                             children: [
