@@ -2,6 +2,7 @@ import 'package:calender/calender_cubit.dart';
 import 'package:calender/calender_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,21 +38,8 @@ class Calender extends StatelessWidget {
         builder: (context, state) {
           CalenderCubit cubit = BlocProvider.of(context);
           scroll.addListener(() {
-            var nextPageTrigger = 0.93 * scroll.position.maxScrollExtent;
-            var nextPageTrigger = 1 * scroll.position.maxScrollExtent;
-            var previousPageTrigger = scroll.position.extentBefore;
-            if (scroll.position.pixels > nextPageTrigger) {
-              print("next page");
 
-              cubit.nextPage();
-            }
-            if (scroll.position.pixels <= 100) {
-              print("previous page");
-              //cubit.previousPage();
-            if (scroll.position.pixels == 0) {
-              cubit.previousPage();
-            }
-            if (state is CalenderInitial) {}
+            // print();
           });
           return Scaffold(
             body: Column(
@@ -61,7 +49,7 @@ class Calender extends StatelessWidget {
                 ),
                 Container(
                   alignment: Alignment.center,
-                  width: double.infinity,
+                  width: MediaQuery.of(context).size.width-20,
                   height: 60,
                   decoration: const BoxDecoration(
                     color: Colors.green,
@@ -76,28 +64,39 @@ class Calender extends StatelessWidget {
                     DateFormat('yyyy MMM').format(cubit.dateTime),
                   ),
                 ),
-                SizedBox(
-                  height: 70,
-                  child: ListView.builder(
-                    controller: scroll,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: cubit.times.length,
-                    itemBuilder: (context, i) => Padding(
-                      key: Key(cubit.times[i].date.toString()),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: SizedBox(
-                        height: 70,
-                        child: Card(
-                          child: Column(
-                            children: [
-                              Text(cubit.times[i].date.toString()),
-                              Text(cubit.times[i].dayName),
-                            ],
+                Row(
+                  children: [
+                    IconButton(onPressed: (){
+                      scroll.animateTo(scroll.offset+80, duration: const Duration(milliseconds: 10), curve: Curves.easeOut);
+                    }, icon:const Icon(Icons.dangerous)),
+                    Expanded(child: SizedBox(
+                      height: 70,
+                      child: ListView.builder(
+                        controller: scroll,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: cubit.times.length,
+                        itemBuilder: (context, i) => Padding(
+                          key: Key(cubit.times[i].date.toString()),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: SizedBox(
+                            height: 70,
+                            width: 90,
+                            child: Card(
+                              child: Column(
+                                children: [
+                                  Text(DateFormat('EEEE').format(cubit.times[i].date)),
+                                  Text(cubit.times[i].dayName),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    ),),
+                    IconButton(onPressed: (){
+                      scroll.animateTo(scroll.offset-80, duration: const Duration(milliseconds: 10), curve: Curves.easeOut);
+                    }, icon:const Icon(Icons.dangerous)),
+                  ],
                 ),
               ],
             ),
