@@ -1,5 +1,85 @@
 import 'package:calender/calender_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+class CalenderCubit extends Cubit<CalenderStats> {
+  CalenderCubit() : super(CalenderInitial()) {
+    _generateItemsFromMonth(monthDateTime);
+    _generateItemsFromYear(yearDateTime);
+  }
+
+  DateTime monthDateTime = DateTime.now();
+  DateTime yearDateTime = DateTime.now();
+  List<MyDate> monthTimes = [];
+  List<MyDate> yearTimes = [];
+
+  void nextPageInMonth() {
+    final nextMonth = monthDateTime.month + 1 <= 12 ? monthDateTime.month + 1 : 1;
+    final nextYear = nextMonth == 1 ? monthDateTime.year + 1 : monthDateTime.year;
+    _generateItemsFromMonth(DateTime(nextYear, nextMonth, 1));
+  }
+
+  void previousPageInMonth() {
+    final prevMonth = monthDateTime.month - 1 >= 1 ? monthDateTime.month - 1 : 12;
+    final prevYear = prevMonth == 12 ? monthDateTime.year - 1 : monthDateTime.year;
+    _generateItemsFromMonth(DateTime(prevYear, prevMonth, 1));
+  }
+
+  void nextPageInYear() {
+    final nextYear = yearDateTime.year + 1;
+    _generateItemsFromYear(DateTime(nextYear, 1, 1));
+  }
+
+  void previousPageInYear() {
+    final prevYear = yearDateTime.year - 1;
+    _generateItemsFromYear(DateTime(prevYear, 1, 1));
+  }
+
+  int daysInMonth(DateTime date) {
+    final firstDayThisMonth = DateTime(date.year, date.month, 1);
+    final firstDayNextMonth =
+    DateTime(firstDayThisMonth.year, firstDayThisMonth.month + 1, 1);
+    return firstDayNextMonth.difference(firstDayThisMonth).inDays;
+  }
+
+  void _generateItemsFromMonth(DateTime date) {
+    monthTimes.clear();
+    monthDateTime = date;
+    final daysCount = daysInMonth(date);
+    for (int i = 1; i <= daysCount; i++) {
+      final date = DateTime(monthDateTime.year, monthDateTime.month, i);
+      monthTimes.add(MyDate(date: date, dayName: date.day.toString(), dayNumber: "$i",));
+    }
+    emit(CalenderInitial());
+  }
+
+  void _generateItemsFromYear(DateTime date) {
+    yearTimes.clear();
+    yearDateTime = date;
+    for (int i = 1; i <= 12; i++) {
+      final monthDate = DateTime(yearDateTime.year, i, 1);
+      yearTimes.add(MyDate(date: monthDate, dayName: DateFormat('MMMM').format(monthDate),
+        dayNumber: i.toString(),
+      ));
+    }
+    emit(CalenderInitial());
+  }
+}
+
+class MyDate {
+  String dayNumber;
+  String dayName;
+  DateTime date;
+
+  MyDate({
+    required this.date,
+    required this.dayName,
+    required this.dayNumber,
+  });
+}
+
+/* import 'package:calender/calender_states.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 class CalenderCubit extends Cubit<CalenderStats> {
   CalenderCubit() : super(CalenderInitial()) {
     var yearMonths = List<int>.generate(12, (i) => i + 1);
@@ -69,3 +149,4 @@ class MyDate {
     required this.dayNumber,
   });
 }
+*/
